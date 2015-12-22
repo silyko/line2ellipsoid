@@ -41,7 +41,7 @@ def project_ontp_ellipse(x, y, w):
         normals = E / w
         dots = np.fabs((normals*(np.fliplr(E-(x,y))*(1,-1))).sum(axis=1)) # simplify this...
         i = np.argmin(dots)
-        delta *= 0.8
+        delta *= 0.75
         if dots[i] < last_dot:
             theta = vs[i]
             p = E[i]
@@ -63,7 +63,7 @@ def normalise(x):
 
 def normals_to_ellipsoid(n, a, b, c):
     """Map some normal vectors of shape (n,3) to ellipsoidal points.
-    Coordinates in standard bases.
+    Coordinates in standard basis.
     """
     return n*np.array([[a,b,c]])
 
@@ -130,7 +130,7 @@ def stuffit(a, b ,c, x1, x2):
     # Image vectors:
     pe1 = project_onto_plane(n, normals_to_ellipsoid(e1,a ,b, c))
     pe2 = project_onto_plane(n, normals_to_ellipsoid(e2, a, b, c))
-    # Coefficients of composite wrt basis
+    # Coefficients of composite wrt current basis {e1, e2}
     a11 = (pe1*e1).sum()
     a21 = ((pe1*e2).sum()+(pe2*e1).sum())*0.5
     a12 = a21  # Symmetric, so f... it!
