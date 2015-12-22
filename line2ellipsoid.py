@@ -20,7 +20,7 @@ def plot_in_3d(point_sets, line_sets, spoint_sets = ()):
     plt.show()
 
 
-def project_ontp_ellipse(x, y, w):
+def project_onto_ellipse(x, y, w):
     """Brute force projection onto an ellipse with axes w[0], w[1] of a point (x,y).
     Substitute with any better, well known, procedure!"""
     theta = np.arctan2(y,x)
@@ -159,7 +159,7 @@ def stuffit(a, b ,c, x1, x2):
     x = (ee1*L).sum()
     y = (ee2*L).sum()
     #Try to minimize - brute force
-    p, dist = project_ontp_ellipse(x, y, w)
+    p, dist = project_onto_ellipse(x, y, w)
     if DEBUG:
         # Just debugging
         xp = (in_plane * ee1).sum(axis=1)
@@ -201,7 +201,7 @@ def normal_to_latlon(n):
 if __name__ == "__main__":
     lat = 10.3
     lon = 120.1
-    d= 100.0
+    d= 1000.0
     a,b,c = 4000., 4000., 3200.0
     n1 = latlon_to_normal(np.radians(lat), np.radians(lon))
     v= np.cross(n1,(-2,7,3))
