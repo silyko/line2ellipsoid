@@ -21,6 +21,26 @@ def plot_in_3d(point_sets, line_sets, spoint_sets = ()):
 
 
 def project_onto_ellipse(x, y, w):
+    # Just solve a complex quartic
+    a = w[0]
+    b = w[1]
+    z = complex(x,y)
+    p = None
+    coeffs = np.array([a**2 - b**2, 2 * complex(-a * x, b * y),0.0 ,2 * complex(a * x,b * y), b**2 - a**2])
+    roots = np.roots(coeffs)
+    dmin = None
+    for r in roots:
+        if abs(1 - np.absolute(r)) < 1e-4:
+            # There should be two relevant roots
+            q = complex(a*np.real(r), b*np.imag(r))
+            d = np.absolute(z-q)
+            if d < dmin or dmin is None:
+                p = q
+                dmin = d
+    return (np.real(p), np.imag(p)), dmin
+    
+
+def project_onto_ellipse2(x, y, w):
     """Brute force projection onto an ellipse with axes w[0], w[1] of a point (x,y).
     Substitute with any better, well known, procedure!"""
     print("Projecting x: %.6f, y: %.6f, x/y: %.6f" % (x,y, x/y))
@@ -242,21 +262,22 @@ def normal_to_ellipsoid(n, a, b, c):
 
 
 if __name__ == "__main__":
-    lat = 10.3
-    lon = 120.1
-    d= 1000.0
+    lat = 10.82
+    lon = 55.17
+    d= 100.0
     print("Starting with dist: %.3f, lat: %.5f lon: %.5f" % (d, lat, lon))
-    a,b,c = 4000., 3000., 3400.0
+    a,b,c = 4000.0, 3600.0, 3000.0
     n1 = latlon_to_normal(np.radians(lat), np.radians(lon))
     v= np.cross(n1,(-2,7,3))
     # just checking
-    xyz = normal_to_ellipsoid(n1, a, b, c) 
+    xyz = normal_to_ellipsoid(n1, a, b, c)
     n2 = ellipsoidal_xyz_to_normals(xyz, a, b, c)
     assert np.fabs(n1-n2).max() < 1e-6
     p0 = xyz + d*n1
     p1 = p0 + 1000.0*v
-    p2 = p0 - 1000.0*v 
+    p2 = p0 - 1000.0*v
     n, dist = stuffit(a, b, c, p1, p2)
+    print("p1: %s, p2: %s" % (str(p1), str(p2))) 
     print("Output normal: %s, dot-line: %.6f" % (n, ((p1 - p2)*n).sum()))
     lat, lon = np.degrees(normal_to_latlon(n))
     print("Output lat: %.5f, lon: %.5f, dist: %.5f" % (lat, lon, dist))
