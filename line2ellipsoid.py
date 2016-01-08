@@ -286,8 +286,8 @@ def normal_to_ellipsoid(n, a, b, c):
 
 if __name__ == "__main__":
     lon = 10.82
-    lat = 55.73
-    d= 400000.0
+    lat = 58.1
+    d= 400.0
     R1 = 6378137.000
     R2 = 6356752.314140
     logging.basicConfig(level=logging.DEBUG)
