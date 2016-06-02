@@ -283,6 +283,32 @@ def normal_to_ellipsoid(n, a, b, c):
     l = np.sqrt(((xyz/(a,b,c))**2).sum())
     return xyz/l
 
+def sectional_curv(azimuth, R1, R2, lat, lon):
+    """Get the sectional curvature for a rotationally symmetric ellipsoid"""
+    # lat, lon and azimuth should be in radians
+    # first get the normal vector
+    print np.degrees((lat, lon, azimuth))
+    n = latlon_to_normal(lat, lon)
+    # then get the cartesic coords
+    xyz = normal_to_ellipsoid(n, R1, R1, R2)
+    # transform onto the parametrizing unit sphere
+    xyz_param = xyz / (R1, R1, R2)
+    # almost a unit vector?
+    assert ((xyz_param ** 2).sum() - 1) < 0.001
+    # get the unit sphere lat, lon 
+    slat, slon = normal_to_latlon(xyz_param)
+    u = slon
+    # move parameter so that lat ranges from 0 to pi
+    v = slat + np.pi * 0.5 
+    E =	(R1 * np.sin(v)) ** 2
+    G = (R1 * np.cos(v)) ** 2 + (R2 * np.sin(v)) ** 2
+    N = np.sqrt(G)
+    e = R1 * R2 * (np.sin(v) ** 2) / N
+    g = R1 * R2 / N
+    du = np.sin(azimuth)
+    dv = np.cos(azimuth)
+    curv = (e * du ** 2  + g * dv ** 2) / (E * du ** 2 + G * dv ** 2)
+    return curv
 
 if __name__ == "__main__":
     lon = 10.82
